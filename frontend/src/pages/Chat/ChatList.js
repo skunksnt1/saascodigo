@@ -28,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
     height: "calc(100% - 58px)",
     overflow: "hidden",
     borderRadius: 0,
+    backgroundColor: "white",
   },
   chatList: {
     display: "flex",
@@ -40,9 +41,6 @@ const useStyles = makeStyles((theme) => ({
   listItem: {
     cursor: "pointer",
   },
-  inline: {
-    color: "white"
-  }
 }));
 
 export default function ChatList({
@@ -111,8 +109,8 @@ export default function ChatList({
 
   const getItemStyle = (chat) => {
     return {
-      borderLeft: chat.uuid === id ? "6px solid #007aff" : null,
-      backgroundColor: chat.uuid === id ? "#539cec" : null,
+      borderLeft: chat.uuid === id ? "6px solid #002d6e" : null,
+      backgroundColor: chat.uuid === id ? "#eee" : null,
     };
   };
 

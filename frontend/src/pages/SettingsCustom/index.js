@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     flex: 1,
   },
   tab: {
-    backgroundColor: theme.mode === 'light' ? "#f2f2f2" : "#7f7f7f",
+    background: "#f2f5f3",
     borderRadius: 4,
   },
   paper: {

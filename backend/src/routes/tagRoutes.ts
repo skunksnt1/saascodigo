@@ -11,8 +11,6 @@ tagRoutes.get("/tags", isAuth, TagController.index);
 
 tagRoutes.post("/tags", isAuth, TagController.store);
 
-tagRoutes.get("/tags/kanban", isAuth, TagController.kanban);
-
 tagRoutes.put("/tags/:tagId", isAuth, TagController.update);
 
 tagRoutes.get("/tags/:tagId", isAuth, TagController.show);

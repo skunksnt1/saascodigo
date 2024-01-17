@@ -168,6 +168,7 @@ export const send = async (req: Request, res: Response): Promise<Response> => {
         })
       );
     } else {
+
       req.app.get("queues").messageQueue.add(
         "SendMessage",
         {

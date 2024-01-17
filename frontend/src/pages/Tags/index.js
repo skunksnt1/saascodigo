@@ -109,7 +109,7 @@ const Tags = () => {
   const fetchTags = useCallback(async () => {
     try {
       const { data } = await api.get("/tags/", {
-        params: { searchParam, pageNumber, kanban: 0 },
+        params: { searchParam, pageNumber },
       });
       dispatch({ type: "LOAD_TAGS", payload: data.tags });
       setHasMore(data.hasMore);
@@ -141,7 +141,7 @@ const Tags = () => {
       }
 
       if (data.action === "delete") {
-        dispatch({ type: "DELETE_TAGS", payload: +data.tagId });
+        dispatch({ type: "DELETE_USER", payload: +data.tagId });
       }
     });
 
@@ -213,10 +213,9 @@ const Tags = () => {
         reload={fetchTags}
         aria-labelledby="form-dialog-title"
         tagId={selectedTag && selectedTag.id}
-        kanban={0}
       />
       <MainHeader>
-        <Title>{i18n.t("tags.title")} ({tags.length})</Title>
+        <Title>{i18n.t("tags.title")}</Title>
         <MainHeaderButtonsWrapper>
           <TextField
             placeholder={i18n.t("contacts.searchPlaceholder")}

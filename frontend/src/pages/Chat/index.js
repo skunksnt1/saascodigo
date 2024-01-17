@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
     flex: 1,
     height: "100%",
     border: "1px solid rgba(0, 0, 0, 0.12)",
-    background: theme.palette.total,
+    backgroundColor: "#eee",
   },
   gridItem: {
     height: "100%",
@@ -81,16 +81,6 @@ export function ChatModal({
 
   const handleSave = async () => {
     try {
-      if (!title) {
-        alert("Por favor, preencha o título da conversa.");
-        return;
-      }
-
-      if (!users || users.length === 0) {
-        alert("Por favor, selecione pelo menos um usuário.");
-        return;
-      }
-
       if (type === "edit") {
         await api.put(`/chats/${chat.id}`, {
           users,
@@ -105,7 +95,7 @@ export function ChatModal({
       }
       handleClose();
     } catch (err) {}
-  };  
+  };
 
   return (
     <Dialog

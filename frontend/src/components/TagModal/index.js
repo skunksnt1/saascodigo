@@ -21,7 +21,7 @@ import { i18n } from "../../translate/i18n";
 import api from "../../services/api";
 import toastError from "../../errors/toastError";
 import { AuthContext } from "../../context/Auth/AuthContext";
-import { Checkbox, FormControlLabel, IconButton, InputAdornment } from "@material-ui/core";
+import { IconButton, InputAdornment } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -63,15 +63,14 @@ const TagSchema = Yup.object().shape({
 		.required("Obrigatório")
 });
 
-const TagModal = ({ open, onClose, tagId, reload, kanban }) => {
+const TagModal = ({ open, onClose, tagId, reload }) => {
 	const classes = useStyles();
 	const { user } = useContext(AuthContext);
 	const [colorPickerModalOpen, setColorPickerModalOpen] = useState(false);
 
 	const initialState = {
 		name: "",
-		color: "",
-		kanban: kanban
+		color: ""
 	};
 
 	const [tag, setTag] = useState(initialState);
@@ -98,15 +97,14 @@ const TagModal = ({ open, onClose, tagId, reload, kanban }) => {
 	};
 
 	const handleSaveTag = async values => {
-		const tagData = { ...values, userId: user.id, kanban: kanban };
-
+		const tagData = { ...values, userId: user.id };
 		try {
 			if (tagId) {
 				await api.put(`/tags/${tagId}`, tagData);
 			} else {
 				await api.post("/tags", tagData);
 			}
-			toast.success(kanban === 0 ? `${i18n.t("tagModal.success")}`: `${i18n.t("tagModal.successKanban")}`);
+			toast.success(i18n.t("tagModal.success"));
 			if (typeof reload == 'function') {
 				reload();
 			}
@@ -126,9 +124,7 @@ const TagModal = ({ open, onClose, tagId, reload, kanban }) => {
 				scroll="paper"
 			>
 				<DialogTitle id="form-dialog-title">
-					{ (tagId ? (kanban === 0 ? `${i18n.t("tagModal.title.edit")}`: `${i18n.t("tagModal.title.editKanban")}`) : 
-							   (kanban === 0 ? `${i18n.t("tagModal.title.add")}`: `${i18n.t("tagModal.title.addKanban")}`)) 
-					}
+					{ (tagId ? `${i18n.t("tagModal.title.edit")}` : `${i18n.t("tagModal.title.add")}`) }
 				</DialogTitle>
 				<Formik
 					initialValues={tag}
