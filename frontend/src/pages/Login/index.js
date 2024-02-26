@@ -1,5 +1,4 @@
-import React, { useState, useContext } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import React, { useState, useContext } from "react";import { Link as RouterLink } from "react-router-dom";
 
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -31,14 +30,30 @@ import logo from "../../assets/logologin.png";
 // };
 
 const useStyles = makeStyles(theme => ({
-	paper: {
-		marginTop: theme.spacing(8),
+	root: {
+		width: "100vw",
+		height: "100vh",
+		//background: "linear-gradient(to right, #191970 , #00008B , #0000FF)", //Cor de fundo
+		 backgroundImage: "url(https://helloclique.com.br/imagens/logo1.png)",
+		 backgroundRepeat: "no-repeat",
+		 backgroundSize: "100% 100%",
+		 backgroundPosition: "center",
 		display: "flex",
 		flexDirection: "column",
 		alignItems: "center",
+		justifyContent: "center",
+		textAlign: "center",
+	},
+	paper: {
+		backgroundColor: "#13703c",
+		display: "flex",
+		flexDirection: "column",
+		alignItems: "center",
+		padding: "55px 30px",
+		borderRadius: "12.5px",
 	},
 	avatar: {
-		margin: theme.spacing(1),
+		margin: theme.spacing(1),  
 		backgroundColor: theme.palette.secondary.main,
 	},
 	form: {
@@ -48,6 +63,9 @@ const useStyles = makeStyles(theme => ({
 	submit: {
 		margin: theme.spacing(3, 0, 2),
 	},
+	powered: {
+		color: "black"
+	}
 }));
 
 const Login = () => {
@@ -67,18 +85,19 @@ const Login = () => {
 	};
 
 	return (
+		<div className={classes.root}>
 		<Container component="main" maxWidth="xs">
-			<CssBaseline />
+			<CssBaseline/>
 			<div className={classes.paper}>
 				<div>
-					<img style={{ margin: "0 auto", height: '100%', width: '100%',alignSelf: 'center' }} src={logo} alt="Whats" />
+					<img style={{ margin: "0 auto", width: "80%" }} src={logo} alt="Whats" />
 				</div>
-				{/* <Typography component="h1" variant="h5">
+				<Typography component="h1" variant="h5">
 					{i18n.t("login.title")}
-				</Typography> */}
+				</Typography>
 				<form className={classes.form} noValidate onSubmit={handlSubmit}>
 					<TextField
-						variant="outlined"
+						variant="standard"
 						margin="normal"
 						required
 						fullWidth
@@ -91,7 +110,7 @@ const Login = () => {
 						autoFocus
 					/>
 					<TextField
-						variant="outlined"
+						variant="standard"
 						margin="normal"
 						required
 						fullWidth
@@ -126,9 +145,13 @@ const Login = () => {
 					</Grid>
 				</form>
 			</div>
+			<br/>
+			<a target="_blank" href="https://helloclique.com.br" className={classes.powered}>Hello Clique / Hello Drop - https://helloclique.com.br</a>
 			<Box mt={8}>{/* <Copyright /> */}</Box>
 		</Container>
+		</div>
 	);
 };
 
 export default Login;
+

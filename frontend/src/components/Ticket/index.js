@@ -61,27 +61,28 @@ const Ticket = () => {
   const history = useHistory();
   const classes = useStyles();
 
-  // const { user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [contact, setContact] = useState({});
   const [ticket, setTicket] = useState({});
-  const [tags, setTags] = useState(null);
 
   useEffect(() => {
     setLoading(true);
     const delayDebounceFn = setTimeout(() => {
       const fetchTicket = async () => {
         try {
+          const { data } = await api.get("/tickets/u/" + ticketId);
+          const { queueId } = data;
+          const { queues, profile } = user;
 
-          const ticketIdNew = ticketId ? ticketId : ticket.id;
-
-          if(!ticketIdNew) return;
-
-          const { data } = await api.get("/tickets/u/" + ticketIdNew);
-
-    
+          const queueAllowed = queues.find((q) => q.id === queueId);
+          if (queueAllowed === undefined && profile !== "admin") {
+            toast.error("Acesso não permitido");
+            history.push("/tickets");
+            return;
+          }
 
           setContact(data.contact);
           setTicket(data);
@@ -94,7 +95,7 @@ const Ticket = () => {
       fetchTicket();
     }, 500);
     return () => clearTimeout(delayDebounceFn);
-  }, [ticketId, history]);
+  }, [ticketId, user, history]);
 
   useEffect(() => {
     const companyId = localStorage.getItem("companyId");
@@ -161,9 +162,7 @@ const Ticket = () => {
       </>
     );
   };
-  const handleTicketUpdateTags = (tagsValue) => {
-    setTags(tagsValue)
-  }
+
   return (
     <div className={classes.root} id="drawer-container">
       <Paper
@@ -175,10 +174,10 @@ const Ticket = () => {
       >
         <TicketHeader loading={loading}>
           {renderTicketInfo()}
-          <TicketActionButtons ticket={ticket}  onTicketUpdate={handleTicketUpdateTags}/>
+          <TicketActionButtons ticket={ticket} />
         </TicketHeader>
         <Paper>
-          <TagsContainer ticket={ticket} dataTags={tags} />
+          <TagsContainer ticket={ticket} />
         </Paper>
         <ReplyMessageProvider>{renderMessagesList()}</ReplyMessageProvider>
       </Paper>

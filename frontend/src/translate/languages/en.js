@@ -249,7 +249,6 @@ const messages = {
 					dashboard: "Dashboard",
 					connections: "Connections",
 					tickets: "Tickets",
-					todolist: "to-Do List",
 					contacts: "Contacts",
 					queues: "Queues",
 					administration: "Administration",

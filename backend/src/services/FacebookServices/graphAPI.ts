@@ -140,7 +140,6 @@ export const getProfile = async (id: string, token: string): Promise<any> => {
     return data;
   } catch (error) {
     console.log(error);
-    console.log(id);
     throw new Error("ERR_FETCHING_FB_USER_PROFILE_2");
   }
 };

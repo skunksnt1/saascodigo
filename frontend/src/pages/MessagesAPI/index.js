@@ -173,6 +173,7 @@ const MessagesAPI = () => {
         enableReinitialize={true}
         onSubmit={(values, actions) => {
           setTimeout(async () => {
+        
             await handleSendMediaMessage(values);
             actions.setSubmitting(false);
             actions.resetForm()
@@ -279,7 +280,7 @@ const MessagesAPI = () => {
             <p>Seguem abaixo a lista de informações necessárias para envio das mensagens de texto:</p>
             <b>Endpoint: </b> {getEndpoint()} <br />
             <b>Método: </b> POST <br />
-            <b>Headers: </b> Authorization Bearer (token cadastrado) e Content-Type (application/json) <br />
+            <b>Headers: </b> X_TOKEN (token cadastrado) e Content-Type (application/json) <br />
             <b>Body: </b> {"{ \"number\": \"558599999999\", \"body\": \"Sua mensagem\" }"}
           </Typography>
         </Grid>
@@ -299,7 +300,7 @@ const MessagesAPI = () => {
             <p>Seguem abaixo a lista de informações necessárias para envio das mensagens de texto:</p>
             <b>Endpoint: </b> {getEndpoint()} <br />
             <b>Método: </b> POST <br />
-            <b>Headers: </b> Authorization Bearer (token cadastrado) e Content-Type (multipart/form-data) <br />
+            <b>Headers: </b> X_TOKEN (token cadastrado) e Content-Type (multipart/form-data) <br />
             <b>FormData: </b> <br />
             <ul>
               <li>

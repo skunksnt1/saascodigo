@@ -253,7 +253,6 @@ const messages = {
 					dashboard: "Dashboard",
 					connections: "Conexiones",
 					tickets: "Tickets",
-					todolist: "Tareas",
 					contacts: "Contactos",
 					queues: "Linhas",
 					administration: "Administración",

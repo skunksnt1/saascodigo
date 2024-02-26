@@ -78,6 +78,12 @@ class Queue extends Model<Queue> {
     hooks: true
   })
   options: QueueOption[];
+
+  @Column
+  mediaPath: string;
+
+  @Column
+  mediaName: string;
 }
 
 export default Queue;

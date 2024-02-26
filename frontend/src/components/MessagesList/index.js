@@ -5,11 +5,13 @@ import clsx from "clsx";
 
 import { green } from "@material-ui/core/colors";
 import {
+  Avatar,
   Button,
   CircularProgress,
   Divider,
   IconButton,
   makeStyles,
+  Typography,
 } from "@material-ui/core";
 
 import {
@@ -31,6 +33,7 @@ import whatsBackground from "../../assets/wa-background.png";
 import api from "../../services/api";
 import toastError from "../../errors/toastError";
 import { socketConnection } from "../../services/socket";
+
 
 const useStyles = makeStyles((theme) => ({
   messagesListWrapper: {
@@ -259,14 +262,21 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "inherit",
     padding: 10,
   },
+  imageLocation: {
+    position: 'relative',
+    width: '100%',
+    height: 80,
+    borderRadius: 5
+  }
 }));
 
 const reducer = (state, action) => {
   if (action.type === "LOAD_MESSAGES") {
     const messages = action.payload;
     const newMessages = [];
-
+    
     messages.forEach((message) => {
+      
       const messageIndex = state.findIndex((m) => m.id === message.id);
       if (messageIndex !== -1) {
         state[messageIndex] = message;
@@ -372,6 +382,7 @@ const MessagesList = ({ ticket, ticketId, isGroup }) => {
       }
 
       if (data.action === "update") {
+        // console.loh(data)
         dispatch({ type: "UPDATE_MESSAGE", payload: data.message });
       }
     });
@@ -422,6 +433,7 @@ const MessagesList = ({ ticket, ticketId, isGroup }) => {
       return <ModalImageCors imageUrl={message.mediaUrl} />;
     }
     if (message.mediaType === "audio") {
+    
       return (
         <audio controls>
           <source src={message.mediaUrl} type="audio/ogg"></source>
@@ -550,6 +562,83 @@ const MessagesList = ({ ticket, ticketId, isGroup }) => {
     );
   };
 
+  const isVCard = (message) => {
+    return message.includes('BEGIN:VCARD');
+  };
+
+  const vCard = (message) => {
+    const name = message?.substring(message.indexOf("N:;") + 3, message.indexOf(";;;"))
+    const description = message?.substring(message.indexOf("TION:") + 5, message.indexOf("TEL"))
+    return (
+      <div>
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: 20, marginBottom: 20 }}>
+          <Avatar style={{ marginRight: 10, marginLeft: 20, width: 60, height: 60 }} />
+          <div style={{ width: 350 }}>
+            <div>
+              <Typography
+                noWrap
+                component="h4"
+                variant="body2"
+                color="textPrimary"
+                style={{ fontWeight: '700' }}
+              >
+                {name}
+              </Typography>
+            </div>
+
+            <div style={{ width: 350 }}>
+              <Typography
+                component="span"
+                variant="body2"
+                color="textPrimary"
+                style={{ display: 'flex' }}
+              >
+                {description}
+              </Typography>
+            </div>
+          </div>
+
+        </div>
+        <div style={{
+          width: '100%', display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginTop: 20,
+          borderWidth: '1px 0 0 0',
+          borderTopColor: '#bdbdbd',
+          borderStyle: 'solid',
+          padding: 8
+        }}>
+          <Typography
+            noWrap
+            component="h4"
+            variant="body2"
+            color="textPrimary"
+            style={{ fontWeight: '700', color: '#2c9ce7' }}
+          >
+            Conversar
+          </Typography>
+        </div>
+      </div>
+    )
+  };
+
+  const messageLocation = (message, createdAt) => {
+    return (
+      <div className={[classes.textContentItem, { display: 'flex', padding: 5 }]}>
+        <img src={message.split('|')[0]} className={classes.imageLocation} />
+        <a
+          style={{ fontWeight: '700', color: 'gray' }}
+          target="_blank"
+          href={message.split('|')[1]}> Clique para ver localização</a>
+        <span className={classes.timestamp}>
+          {format(parseISO(createdAt), "HH:mm")}
+        </span>
+      </div>
+    )
+  };
+
+
   const renderMessages = () => {
     if (messagesList.length > 0) {
       const viewMessagesList = messagesList.map((message, index) => {
@@ -577,14 +666,26 @@ const MessagesList = ({ ticket, ticketId, isGroup }) => {
                     {message.contact?.name}
                   </span>
                 )}
+
                 {message.mediaUrl && checkMessageMedia(message)}
-                <div className={classes.textContentItem}>
-                  {message.quotedMsg && renderQuotedMessage(message)}
-                  <MarkdownWrapper>{message.body}</MarkdownWrapper>
-                  <span className={classes.timestamp}>
-                    {format(parseISO(message.createdAt), "HH:mm")}
-                  </span>
-                </div>
+
+                {message.body.includes('data:image') ? messageLocation(message.body, message.createdAt)
+                  :
+                  isVCard(message.body) ?
+                    <div className={[classes.textContentItem, { marginRight: 0 }]}>
+                      {vCard(message.body)}
+                    </div>
+
+                    :
+
+
+                    (<div className={classes.textContentItem}>
+                      {message.quotedMsg && renderQuotedMessage(message)}
+                      <MarkdownWrapper>{message.body}</MarkdownWrapper>
+                      <span className={classes.timestamp}>
+                        {format(parseISO(message.createdAt), "HH:mm")}
+                      </span>
+                    </div>)}
               </div>
             </React.Fragment>
           );
@@ -620,7 +721,15 @@ const MessagesList = ({ ticket, ticketId, isGroup }) => {
                       className={classes.deletedIcon}
                     />
                   )}
-                  {message.quotedMsg && renderQuotedMessage(message)}
+                  {message.body.includes('data:image') ? messageLocation(message.body, message.createdAt)
+                  :
+                  isVCard(message.body) ?
+                    <div className={[classes.textContentItem]}>
+                      {vCard(message.body)}
+                    </div>
+
+                    :
+                  message.quotedMsg && renderQuotedMessage(message)}
                   <MarkdownWrapper>{message.body}</MarkdownWrapper>
                   <span className={classes.timestamp}>
                     {format(parseISO(message.createdAt), "HH:mm")}
@@ -653,28 +762,28 @@ const MessagesList = ({ ticket, ticketId, isGroup }) => {
       >
         {messagesList.length > 0 ? renderMessages() : []}
       </div>
-      {ticket?.channel !== "whatsapp" && (
-          <div
-            style={{
-              width: "100%",
-              display: "flex",
-              padding: "10px",
-              alignItems: "center",
-              backgroundColor: "#E1F3FB",
-            }}
-          >
-            {ticket?.channel === "facebook" ? (
-              <Facebook small />
-            ) : (
-              <Instagram small />
-            )}
+      {ticket?.channel !== "whatsapp" || ticket.channel === undefined && (
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            padding: "10px",
+            alignItems: "center",
+            backgroundColor: "#E1F3FB",
+          }}
+        >
+          {ticket?.channel === "facebook" ? (
+            <Facebook small />
+          ) : (
+            <Instagram small />
+          )}
 
-            <span>
-              Você tem 24h para responder após receber uma mensagem, de acordo
-              com as políticas do Facebook.
-            </span>
-          </div>
-        )}
+          <span>
+            Você tem 24h para responder após receber uma mensagem, de acordo
+            com as políticas do Facebook.
+          </span>
+        </div>
+      )}
       {loading && (
         <div>
           <CircularProgress className={classes.circleLoading} />

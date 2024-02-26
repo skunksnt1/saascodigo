@@ -71,7 +71,7 @@ class Ticket extends Model<Ticket> {
   @ForeignKey(() => Whatsapp)
   @Column
   whatsappId: number;
-  
+
 
   @BelongsTo(() => Whatsapp)
   whatsapp: Whatsapp;

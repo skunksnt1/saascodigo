@@ -28,7 +28,6 @@ const useStyles = makeStyles(theme => ({
         alignItems: "center",
         justifyContent: "center",
         height: "100%",
-		backgroundColor: "#eee"
     },
     placeholderItem: {
     }
@@ -40,18 +39,18 @@ const TicketAdvanced = (props) => {
 	const [option, setOption] = useState(0);
     const { currentTicket, setCurrentTicket } = useContext(TicketsContext)
 
-    // useEffect(() => {
-    //     if(currentTicket.id !== null) {
-    //         setCurrentTicket({ id: currentTicket.id, code: '#open' })
-    //     }
-    //     if (!ticketId) {
-    //         setOption(1)
-    //     }
-    //     return () => {
-    //         setCurrentTicket({ id: null, code: null })
-    //     }
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [])
+    useEffect(() => {
+        if(currentTicket.id !== null) {
+            setCurrentTicket({ id: currentTicket.id, code: '#open' })
+        }
+        if (!ticketId) {
+            setOption(1)
+        }
+        return () => {
+            setCurrentTicket({ id: null, code: null })
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     useEffect(() => {
         if (currentTicket.id !== null) {

@@ -193,7 +193,6 @@ export const storeFacebook = async (
     }
   }
 
-  console.log(pages)
 
   for await (const pageConection of pages) {
     const exist = await Whatsapp.findOne({
@@ -239,7 +238,6 @@ export const update = async (
   const { whatsappId } = req.params;
   const whatsappData = req.body;
   const { companyId } = req.user;
-
   const { whatsapp, oldDefaultWhatsapp } = await UpdateWhatsAppService({
     whatsappData,
     whatsappId,

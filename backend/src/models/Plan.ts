@@ -7,7 +7,8 @@ import {
   PrimaryKey,
   AutoIncrement,
   AllowNull,
-  Unique
+  Unique,
+  Default
 } from "sequelize-typescript";
 
 @Table
@@ -39,6 +40,10 @@ class Plan extends Model<Plan> {
 
   @UpdatedAt
   updatedAt: Date;
+
+  @Default(true)
+  @Column
+  isPublic: boolean;
 }
 
 export default Plan;

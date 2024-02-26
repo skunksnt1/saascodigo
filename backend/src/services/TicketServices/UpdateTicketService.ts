@@ -36,7 +36,7 @@ interface Response {
   oldUserId: number | undefined;
 }
 
-const UpdateTicketService = async ({
+const   UpdateTicketService = async ({
   ticketData,
   ticketId,
   companyId
@@ -106,6 +106,7 @@ const UpdateTicketService = async ({
             ratingAt: moment().toDate()
           });
 
+
           io.to("open")
             .to(ticketId.toString())
             .emit(`company-${ticket.companyId}-ticket`, {
@@ -121,9 +122,13 @@ const UpdateTicketService = async ({
 
       if (!isNil(complationMessage) && complationMessage !== "") {
         const body = `\u200e${complationMessage}`;
-        if (ticket.channel === "whatsapp") {
-          await SendWhatsAppMessage({ body, ticket });
+        
+        if (ticket.channel === "whatsapp" && !ticket.isGroup) {
+          const sentMessage = await SendWhatsAppMessage({ body, ticket });
+
+          await verifyMessage(sentMessage, ticket, ticket.contact );
         }
+
 
         if (["facebook", "instagram"].includes(ticket.channel)) {
           console.log(`Checking if ${ticket.contact.number} is a valid ${ticket.channel} contact`)
@@ -147,15 +152,32 @@ const UpdateTicketService = async ({
       const queue = await Queue.findByPk(queueId);
       if (ticket.channel === "whatsapp") {
         const wbot = await GetTicketWbot(ticket);
-
-        const queueChangedMessage = await wbot.sendMessage(
-          `${ticket.contact.number}@${ticket.isGroup ? "g.us" : "s.whatsapp.net"
-          }`,
-          {
-            text: "\u200eVocê foi transferido, em breve iremos iniciar seu atendimento."
-          }
+        const { transferMessage } = await ShowWhatsAppService(
+          ticket.whatsappId,
+          companyId
         );
-        await verifyMessage(queueChangedMessage, ticket, ticket.contact);
+
+        if(transferMessage){
+          const queueChangedMessage = await wbot.sendMessage(
+            `${ticket.contact.number}@${ticket.isGroup ? "g.us" : "s.whatsapp.net"
+            }`,
+            {
+              text: `\u200e${transferMessage}`
+            }
+          );
+          await verifyMessage(queueChangedMessage, ticket, ticket.contact);
+        }else{
+          const queueChangedMessage = await wbot.sendMessage(
+            `${ticket.contact.number}@${ticket.isGroup ? "g.us" : "s.whatsapp.net"
+            }`,
+            {
+              text: "\u200eVocê foi transferido, em breve iremos iniciar seu atendimento."
+            }
+          );
+          await verifyMessage(queueChangedMessage, ticket, ticket.contact);
+        }
+
+
       }
 
       if (["facebook", "instagram"].includes(ticket.channel)) {
@@ -198,6 +220,11 @@ const UpdateTicketService = async ({
       });
       io.emit(`company-${companyId}-ticket`, {
         action: "removeFromList",
+        ticketId: ticket?.id
+      });
+
+      io.emit(`company-${companyId}-ticket`, {
+        action: "updateUnread",
         ticketId: ticket?.id
       });
     }

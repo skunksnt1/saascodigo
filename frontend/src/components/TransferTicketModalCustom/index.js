@@ -118,6 +118,7 @@ const TransferTicketModalCustom = ({ modalOpen, onClose, ticketid }) => {
       }
 
       await api.put(`/tickets/${ticketid}`, data);
+      console.log(data)
 
       history.push(`/tickets`);
     } catch (err) {

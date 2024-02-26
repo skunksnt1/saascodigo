@@ -30,9 +30,11 @@ import CampaignsConfig from "../pages/CampaignsConfig";
 import CampaignReport from "../pages/CampaignReport";
 import Annoucements from "../pages/Annoucements";
 import Chat from "../pages/Chat";
-import Subscription from "../pages/Subscription/";
 import ToDoList from "../pages/ToDoList/";
+import Subscription from "../pages/Subscription/";
 
+import Kanban from "../pages/Kanban";
+import TagsKanban from "../pages/TagsKanban";
 
 const Routes = () => {
   const [showCampaigns, setShowCampaigns] = useState(false);
@@ -75,14 +77,14 @@ const Routes = () => {
                 />
                 <Route
                   exact
-                  path="/todolist"
-                  component={ToDoList}
+                  path="/schedules"
+                  component={Schedules}
                   isPrivate
                 />
                 <Route
                   exact
-                  path="/schedules"
-                  component={Schedules}
+                  path="/todolist"
+                  component={ToDoList}
                   isPrivate
                 />
                 <Route exact path="/tags" component={Tags} isPrivate />
@@ -120,6 +122,21 @@ const Routes = () => {
                   component={Subscription}
                   isPrivate
                 />
+                
+                <Route
+                  exact
+                  path="/Kanban"
+                  component={Kanban}
+                  isPrivate
+                />
+                
+                <Route
+                  exact
+                  path="/tagsKanban"
+                  component={TagsKanban}
+                  isPrivate
+                />
+
                 <Route exact path="/chats/:id?" component={Chat} isPrivate />
                 {showCampaigns && (
                   <>
@@ -153,6 +170,7 @@ const Routes = () => {
                       component={CampaignsConfig}
                       isPrivate
                     />
+                    
                   </>
                 )}
               </LoggedInLayout>

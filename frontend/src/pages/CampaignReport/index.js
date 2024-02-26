@@ -100,6 +100,7 @@ const CampaignReport = () => {
     const socket = socketConnection({ companyId });
 
     socket.on(`company-${companyId}-campaign`, (data) => {
+  
       if (data.record.id === +campaignId) {
         setCampaign(data.record);
 

@@ -6,12 +6,14 @@ import Tag from "../../models/Tag";
 interface Request {
   name: string;
   color: string;
+  kanban: string;
   companyId: number;
 }
 
 const CreateService = async ({
   name,
   color = "#A4CCCC",
+  kanban,
   companyId
 }: Request): Promise<Tag> => {
   const schema = Yup.object().shape({
@@ -25,8 +27,8 @@ const CreateService = async ({
   }
 
   const [tag] = await Tag.findOrCreate({
-    where: { name, color, companyId },
-    defaults: { name, color, companyId }
+    where: { name, color, kanban, companyId },
+    defaults: { name, color, kanban, companyId }
   });
 
   await tag.reload();

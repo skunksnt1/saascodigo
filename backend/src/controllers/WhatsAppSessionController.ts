@@ -35,7 +35,7 @@ const update = async (req: Request, res: Response): Promise<Response> => {
 };
 
 const remove = async (req: Request, res: Response): Promise<Response> => {
-  console.log("remove");
+
   const { whatsappId } = req.params;
   const { companyId } = req.user;
 

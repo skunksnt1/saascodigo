@@ -28,6 +28,9 @@ class Tag extends Model<Tag> {
   @Column
   color: string;
 
+  @Column
+  kanban: number;
+
   @HasMany(() => TicketTag)
   ticketTags: TicketTag[];
 

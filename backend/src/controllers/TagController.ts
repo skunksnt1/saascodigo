@@ -5,6 +5,7 @@ import AppError from "../errors/AppError";
 
 import CreateService from "../services/TagServices/CreateService";
 import ListService from "../services/TagServices/ListService";
+import KanbanListService from "../services/TagServices/KanbanListService";
 import UpdateService from "../services/TagServices/UpdateService";
 import ShowService from "../services/TagServices/ShowService";
 import DeleteService from "../services/TagServices/DeleteService";
@@ -14,28 +15,33 @@ import SyncTagService from "../services/TagServices/SyncTagsService";
 type IndexQuery = {
   searchParam?: string;
   pageNumber?: string | number;
+  kanban?: number;
 };
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
-  const { pageNumber, searchParam } = req.query as IndexQuery;
+  const { pageNumber, searchParam, kanban } = req.query as IndexQuery;
   const { companyId } = req.user;
+
+  console.log(searchParam);
 
   const { tags, count, hasMore } = await ListService({
     searchParam,
     pageNumber,
-    companyId
+    companyId,
+    kanban
   });
 
   return res.json({ tags, count, hasMore });
 };
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
-  const { name, color } = req.body;
+  const { name, color, kanban } = req.body;
   const { companyId } = req.user;
 
   const tag = await CreateService({
     name,
     color,
+    kanban,
     companyId
   });
 
@@ -60,7 +66,7 @@ export const update = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  if (req.user.profile !== "admin") {
+  if (req.user.profile !== "admin" && req.user.profile !== "supervisor") {
     throw new AppError("ERR_NO_PERMISSION", 403);
   }
 
@@ -99,9 +105,18 @@ export const list = async (req: Request, res: Response): Promise<Response> => {
   const { searchParam } = req.query as IndexQuery;
   const { companyId } = req.user;
 
+  //console.log(searchParam);
   const tags = await SimpleListService({ searchParam, companyId });
 
   return res.json(tags);
+};
+
+export const kanban = async (req: Request, res: Response): Promise<Response> => {
+  const { companyId } = req.user;
+
+  const tags = await KanbanListService({ companyId });
+  //console.log(tags);
+  return res.json({lista:tags});
 };
 
 export const syncTags = async (

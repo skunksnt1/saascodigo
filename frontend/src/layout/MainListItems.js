@@ -15,20 +15,25 @@ import PeopleAltOutlinedIcon from "@material-ui/icons/PeopleAltOutlined";
 import ContactPhoneOutlinedIcon from "@material-ui/icons/ContactPhoneOutlined";
 import AccountTreeOutlinedIcon from "@material-ui/icons/AccountTreeOutlined";
 import FlashOnIcon from "@material-ui/icons/FlashOn";
+import CalendarToday from "@material-ui/icons/CalendarToday";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import CodeRoundedIcon from "@material-ui/icons/CodeRounded";
 import EventIcon from "@material-ui/icons/Event";
+import DarkMode from "../components/DarkMode";
+
 import LocalOfferIcon from "@material-ui/icons/LocalOffer";
 import EventAvailableIcon from "@material-ui/icons/EventAvailable";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import PeopleIcon from "@material-ui/icons/People";
 import ListIcon from "@material-ui/icons/ListAlt";
+import LoyaltyRoundedIcon from '@material-ui/icons/LoyaltyRounded';
 import AnnouncementIcon from "@material-ui/icons/Announcement";
 import ForumIcon from "@material-ui/icons/Forum";
 import LocalAtmIcon from '@material-ui/icons/LocalAtm';
-
+import RotateRight from "@material-ui/icons/RotateRight";
 import { i18n } from "../translate/i18n";
+import BorderColorIcon from '@material-ui/icons/BorderColor';
 import { WhatsAppsContext } from "../context/WhatsApp/WhatsAppsContext";
 import { AuthContext } from "../context/Auth/AuthContext";
 import { Can } from "../components/Can";
@@ -36,6 +41,16 @@ import { socketConnection } from "../services/socket";
 import { isArray } from "lodash";
 import api from "../services/api";
 import toastError from "../errors/toastError";
+import { makeStyles } from "@material-ui/core/styles";
+
+const useStyles = makeStyles((theme) => ({
+  ListSubheader: {
+    height: 26,
+    marginTop: "-15px",
+    marginBottom: "-10px",
+  },
+}));
+
 
 function ListItemLink(props) {
   const { icon, primary, to, className } = props;
@@ -50,7 +65,7 @@ function ListItemLink(props) {
 
   return (
     <li>
-      <ListItem button component={renderLink} className={className}>
+      <ListItem button dense component={renderLink} className={className}>
         {icon ? <ListItemIcon>{icon}</ListItemIcon> : null}
         <ListItemText primary={primary} />
       </ListItem>
@@ -115,14 +130,16 @@ const reducer = (state, action) => {
 };
 
 const MainListItems = (props) => {
-  const { drawerClose } = props;
+  const classes = useStyles();
+  const { drawerClose, drawerOpen} = props;
   const { whatsApps } = useContext(WhatsAppsContext);
-  const { user } = useContext(AuthContext);
+  const { user ,handleLogout} = useContext(AuthContext);
   const [connectionWarning, setConnectionWarning] = useState(false);
   const [openCampaignSubmenu, setOpenCampaignSubmenu] = useState(false);
+  const [openKanbanSubmenu, setOpenKanbanSubmenu] = useState(false);
+
   const [showCampaigns, setShowCampaigns] = useState(false);
   const history = useHistory();
-
   const [invisible, setInvisible] = useState(true);
   const [pageNumber, setPageNumber] = useState(1);
   const [searchParam] = useState("");
@@ -215,81 +232,176 @@ const MainListItems = (props) => {
     }
   };
 
+  const handleClickLogout = () => {
+    //handleCloseMenu();
+    handleLogout();
+  };
+
   return (
     <div onClick={drawerClose}>
       <Can
         role={user.profile}
-        perform="dashboard:view"
-        yes={() => (
-          <ListItemLink
-            to="/"
-            primary="Dashboard"
-            icon={<DashboardOutlinedIcon />}
-          />
+        perform={"drawer-service-items:view"}
+        style={{
+          overflowY: "scroll",
+        }}
+        no={()=>(
+        <>
+          <ListSubheader 
+          hidden={!drawerOpen}
+        style={{
+          position:"relative",
+          fontSize: "17px",
+          textAlign: "left",
+          paddingLeft: 20
+        }}   
+        inset
+        color="inherit">
+              {i18n.t("mainDrawer.listItems.service")}
+          </ListSubheader>
+          <>
+            
+            <ListItemLink
+              to="/tickets"
+              primary={i18n.t("mainDrawer.listItems.tickets")}
+              icon={<WhatsAppIcon />}
+            />
+            <ListItem
+            dense
+            button
+            onClick={() => setOpenKanbanSubmenu((prev) => !prev)}
+          >
+            <ListItemIcon>
+              <LoyaltyRoundedIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary={i18n.t("mainDrawer.listItems.kanban")}
+            />
+            {openKanbanSubmenu ? (
+              <ExpandLessIcon />
+            ) : (
+              <ExpandMoreIcon />
+            )}
+          </ListItem>
+          <Collapse
+            style={{ paddingLeft: 15 }}
+            in={openKanbanSubmenu}
+            timeout="auto"
+            unmountOnExit
+          >
+            <List dense component="div" disablePadding>
+              <ListItem onClick={() => history.push("/kanban")} button>
+                <ListItemIcon>
+                  <ListIcon />
+                </ListItemIcon>
+                <ListItemText primary={i18n.t("kanban.subMenus.list")}/>
+              </ListItem>
+              <ListItem
+                onClick={() => history.push("/tagsKanban")}
+                button
+              >
+                <ListItemIcon>
+                  <CalendarToday />
+                </ListItemIcon>
+                <ListItemText primary={i18n.t("kanban.subMenus.tags")} />
+              </ListItem>                
+            </List>
+          </Collapse>
+          {/* <ListItemLink
+            to="/kanban"
+            primary="Kanban"
+            icon={<LoyaltyRoundedIcon />}
+          /> */}
+      <ListItemLink
+        to="/todolist"
+        primary={i18n.t("Tarefas")}
+        icon={<BorderColorIcon />}
+      />
+            <ListItemLink
+              to="/quick-messages"
+              primary={i18n.t("mainDrawer.listItems.quickMessages")}
+              icon={<FlashOnIcon />}
+            />
+            <ListItemLink
+              to="/contacts"
+              primary={i18n.t("mainDrawer.listItems.contacts")}
+              icon={<ContactPhoneOutlinedIcon />}
+            />
+            <ListItemLink
+              to="/schedules"
+              primary={i18n.t("mainDrawer.listItems.schedules")}
+              icon={<EventIcon />}
+            />
+            <ListItemLink
+              to="/tags"
+              primary={i18n.t("mainDrawer.listItems.tags")}
+              icon={<LocalOfferIcon />}
+            />
+            <ListItemLink
+              to="/chats"
+              primary={i18n.t("mainDrawer.listItems.chats")}
+              icon={
+                <Badge color="secondary" variant="dot" invisible={invisible}>
+                  <ForumIcon />
+                </Badge>
+              }
+            />
+            <ListItemLink
+              to="/helps"
+              primary={i18n.t("mainDrawer.listItems.helps")}
+              icon={<HelpOutlineIcon />}
+            />
+          </>
+        </>
         )}
       />
 
-      <ListItemLink
-        to="/tickets"
-        primary={i18n.t("mainDrawer.listItems.tickets")}
-        icon={<WhatsAppIcon />}
+      <Can
+        role={user.profile}
+        perform={"drawer-admin-items:view"}
+        yes={()=>(
+          <>
+            <Divider/>
+            <ListSubheader 
+            hidden={!drawerOpen}
+            style={{
+              position:"relative",
+              fontSize: "17px",
+              textAlign: "left",
+              paddingLeft: 20
+            }} 
+            inset
+            color="inherit">
+              {i18n.t("mainDrawer.listItems.management")}
+            </ListSubheader>
+            <ListItemLink
+            small
+            to="/"
+            primary="Dashboard"
+            icon={<DashboardOutlinedIcon />}
+            />
+        </>
+        )}
       />
-
-     <ListItemLink
-        to="/todolist"
-        primary={i18n.t("mainDrawer.listItems.todolist")}
-        icon={<EventIcon />}
-        />
-
-      <ListItemLink
-        to="/quick-messages"
-        primary={i18n.t("mainDrawer.listItems.quickMessages")}
-        icon={<FlashOnIcon />}
-      />
-
-      <ListItemLink
-        to="/contacts"
-        primary={i18n.t("mainDrawer.listItems.contacts")}
-        icon={<ContactPhoneOutlinedIcon />}
-      />
-
-      <ListItemLink
-        to="/schedules"
-        primary={i18n.t("mainDrawer.listItems.schedules")}
-        icon={<EventIcon />}
-      />
-
-      <ListItemLink
-        to="/tags"
-        primary={i18n.t("mainDrawer.listItems.tags")}
-        icon={<LocalOfferIcon />}
-      />
-
-      <ListItemLink
-        to="/chats"
-        primary={i18n.t("mainDrawer.listItems.chats")}
-        icon={
-          <Badge color="secondary" variant="dot" invisible={invisible}>
-            <ForumIcon />
-          </Badge>
-        }
-      />
-
-      <ListItemLink
-        to="/helps"
-        primary={i18n.t("mainDrawer.listItems.helps")}
-        icon={<HelpOutlineIcon />}
-      />
-
       <Can
         role={user.profile}
         perform="drawer-admin-items:view"
         yes={() => (
           <>
             <Divider />
-            <ListSubheader inset>
+            <ListSubheader 
+            hidden={!drawerOpen}
+            style={{
+              position:"relative",
+              fontSize: "17px",
+              textAlign: "left",
+              paddingLeft: 20
+            }} 
+            inset
+            color="inherit">
               {i18n.t("mainDrawer.listItems.administration")}
             </ListSubheader>
+            
             {showCampaigns && (
               <>
                 <ListItem
@@ -379,20 +491,27 @@ const MainListItems = (props) => {
                 primary={i18n.t("mainDrawer.listItems.financeiro")}
                 icon={<LocalAtmIcon />}
               />
+
             <ListItemLink
               to="/settings"
               primary={i18n.t("mainDrawer.listItems.settings")}
               icon={<SettingsOutlinedIcon />}
             />
-{/*             <ListItemLink
-              to="/subscription"
-              primary="Assinatura"
-              icon={<PaymentIcon />}
-              //className={classes.menuItem}
-            /> */}
+          {}
+
           </>
         )}
       />
+      <Divider />
+      <li>
+        <ListItem 
+        button 
+        dense 
+        onClick={handleClickLogout}> 
+            <ListItemIcon><RotateRight/></ListItemIcon> 
+          <ListItemText primary={i18n.t("mainDrawer.listItems.logout")} />
+        </ListItem>
+      </li>
     </div>
   );
 };

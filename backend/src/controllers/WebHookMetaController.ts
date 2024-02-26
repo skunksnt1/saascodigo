@@ -46,8 +46,8 @@ export const webHook = async (
 
       if (getTokenPage) {
         entry.messaging?.forEach((data: any) => {
- 
-          console.log(data)
+
+       
           handleMessage(getTokenPage, data, channel, getTokenPage.companyId);
         });
       }
